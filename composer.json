@@ -1,0 +1,19 @@
+{
+    "name": "suu_tomozo/tsukinomito",
+    "authors": [
+        {
+            "name": "suzuki",
+            "email": "t.suzuki@trustridge.jp"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^2.4",
+        "knplabs/github-api": "^2.8",
+        "php-http/guzzle6-adapter": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}
