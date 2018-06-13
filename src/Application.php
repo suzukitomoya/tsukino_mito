@@ -6,11 +6,11 @@ use App\Components;
 
 class Application
 {
-    private $request;
+    private static $request;
 
     function __construct()
     {
-        $this->request = [
+        self::$request = [
             'token'        => $_POST['token'] ?? null,
             'channel_id'   => $_POST['channel_id'] ?? null,
             'trigger_word' => $_POST['trigger_word'] ?? null,
@@ -24,29 +24,41 @@ class Application
     private static function middleware()
     {
         if (
-            ! isset($this->request['token'], $this->request['channel_id'])
-            || $this->request['token'] !== getenv('SLACK_WEBHOOK_TOKEN')
-            || $this->request['channel_id'] !== getenv('SLACK_CHANNEL_ID')
+            ! isset(self::$request['token'], self::$request['channel_id'])
+            || self::$request['token'] !== getenv('SLACK_WEBHOOK_TOKEN')
+            || self::$request['channel_id'] !== getenv('SLACK_CHANNEL_ID')
         ) {
-            // TODO: throw Exception
-            exit;
+            throw new Exception('Invalid slack credentials');
         }
     }
 
-    public static function dispatch()
+    private static function run(string $className)
     {
-        switch ($this->request['trigger_word']) {
+        if (!class_exists($className, false)) {
+            throw new Exception('Undefined class: '.$className);
+        }
+        if (!method_exists($className, 'run')) {
+            throw new Exception('Undefined run method: '.$className);
+        }
+
+        $className::run(self::$request);
+    }
+
+    public function dispatch()
+    {
+        switch (self::$request['trigger_word']) {
             case '委員長':
             case '月ノ美兎':
-                Components\TsukinoMito::run();
+                self::run(Components\TsukinoMito::class);
                 exit;
                 break;
 
             case ':リリース作成':
-                $repository = strpos($this->request['text'], 'adm_macaroni') === false
-                    ? 'macaroni_web'
-                    : 'adm_macaroni';
-                (new Components\CreateGitHubReleaseBranch($repository))->run();
+                // self::run(Components\CreateGitHubReleaseBranch::class);
+                // $repository = strpos($this->request['text'], 'adm_macaroni') === false
+                //     ? 'macaroni_web'
+                //     : 'adm_macaroni';
+                // (new Components\CreateGitHubReleaseBranch($repository))->run();
                 exit;
                 break;
         }
