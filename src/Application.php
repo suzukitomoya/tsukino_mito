@@ -59,13 +59,13 @@ class Application
             if (!method_exists($className, 'run')) {
                 throw new Exception('Undefined run method: '.$className);
             }
+
+            $className::run(self::$request);
         } catch (Exception $e) {
             error_log('Application::run() : '.$e->getMessage());
             self::response('');
             exit;
         }
-
-        $className::run(self::$request);
     }
 
     /**
@@ -77,6 +77,10 @@ class Application
             case '委員長':
             case '月ノ美兎':
                 self::run(Components\TsukinoMito::class);
+                exit;
+                break;
+            case ':リリース作成':
+                self::run(Components\CreateGitHubReleaseBranch::class);
                 exit;
                 break;
 //            case 'foo':

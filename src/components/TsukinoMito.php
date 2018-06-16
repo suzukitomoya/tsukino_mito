@@ -17,7 +17,7 @@ class TsukinoMito
     /**
      * @param array $request
      */
-    public static function run($request)
+    public static function run(array $request)
     {
         self::response(self::MESSAGES[array_rand(self::MESSAGES)]);
         exit;
