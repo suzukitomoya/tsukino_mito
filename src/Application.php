@@ -1,11 +1,13 @@
 <?php
 namespace App;
 
-use Dotenv;
+use Exception;
 use App\Components;
 
 class Application
 {
+    use Response;
+
     private static $request;
 
     function __construct()
@@ -17,33 +19,58 @@ class Application
             'text'         => $_POST['text'] ?? null,
         ];
 
-        (new Dotenv\Dotenv(__DIR__))->load();
         self::middleware();
     }
 
-    private static function middleware()
+    /**
+     * リクエスト検査
+     *
+     * @return void
+     */
+    private static function middleware(): void
     {
-        if (
-            ! isset(self::$request['token'], self::$request['channel_id'])
-            || self::$request['token'] !== getenv('SLACK_WEBHOOK_TOKEN')
-            || self::$request['channel_id'] !== getenv('SLACK_CHANNEL_ID')
-        ) {
-            throw new Exception('Invalid slack credentials');
+        try {
+            if (
+                !isset(self::$request['token'], self::$request['channel_id'])
+                || self::$request['token'] !== getenv('SLACK_WEBHOOK_TOKEN')
+                || self::$request['channel_id'] !== getenv('SLACK_CHANNEL_ID')
+            ) {
+                throw new Exception('Invalid slack credentials');
+            }
+        } catch (Exception $e) {
+            error_log('Application::middleware() : '.$e->getMessage());
+            self::response('');
+            exit;
         }
     }
 
-    private static function run(string $className)
+    /**
+     * コンポーネントの実行
+     *
+     * @param string $className
+     * @return void
+     */
+    private static function run(string $className): void
     {
-        if (!class_exists($className, false)) {
-            throw new Exception('Undefined class: '.$className);
-        }
-        if (!method_exists($className, 'run')) {
-            throw new Exception('Undefined run method: '.$className);
+        try {
+            if (!class_exists($className, false)) {
+                throw new Exception('Undefined class: '.$className);
+            }
+            if (!method_exists($className, 'run')) {
+                throw new Exception('Undefined run method: '.$className);
+            }
+        } catch (Exception $e) {
+            error_log('Application::run() : '.$e->getMessage());
+            self::response('');
+            exit;
         }
 
         $className::run(self::$request);
     }
 
+    /**
+     * ディスパッチルーティング
+     */
     public function dispatch()
     {
         switch (self::$request['trigger_word']) {
@@ -52,17 +79,11 @@ class Application
                 self::run(Components\TsukinoMito::class);
                 exit;
                 break;
-
-            case ':リリース作成':
-                // self::run(Components\CreateGitHubReleaseBranch::class);
-                // $repository = strpos($this->request['text'], 'adm_macaroni') === false
-                //     ? 'macaroni_web'
-                //     : 'adm_macaroni';
-                // (new Components\CreateGitHubReleaseBranch($repository))->run();
-                exit;
-                break;
+//            case 'foo':
+//                self::run(Components\Bar::class);
+//                exit;
+//                break;
         }
-
         exit;
     }
 }
