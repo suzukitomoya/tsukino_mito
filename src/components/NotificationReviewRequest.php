@@ -72,7 +72,7 @@ class NotificationReviewRequest
         }
 
         return empty($body)
-            ? sprintf('[%s] 未対応のレビュー依頼はないよ！やったね！', self::$gitRepository)
+            ? sprintf('[%s] 未対応のレビュー依頼はないよ！がんばったね！', self::$gitRepository)
             : sprintf(
                 ":innocent::innocent::innocent: [%s] レビュー依頼が届いてるよ〜 :innocent::innocent::innocent:\n\n\n%s",
                 self::$gitRepository,
