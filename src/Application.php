@@ -83,6 +83,10 @@ class Application
                 self::run(Components\CreateGitHubReleaseBranch::class);
                 exit;
                 break;
+            case 'ﾚﾋﾞｭｰﾏｰﾝ':
+                self::run(Components\NotificationReviewRequest::class);
+                exit;
+                break;
 //            case 'foo':
 //                self::run(Components\Bar::class);
 //                exit;
