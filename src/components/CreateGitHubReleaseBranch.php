@@ -69,7 +69,11 @@ class CreateGitHubReleaseBranch
             throw new Exception('CreateGitHubReleaseBranch::init() : .env設定して！');
         }
 
-        self::$repository = $request['text'];
+        self::$repository = trim(str_replace($request['trigger_word'], '', $request['text']));
+        if (empty(self::$repository)) {
+            self::response('リポジトリ名を指定してください！');
+            exit;
+        }
 
         self::$githubClient = new GithubClient();
         self::$githubClient
