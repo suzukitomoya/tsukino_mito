@@ -69,19 +69,15 @@ class NotificationReviewRequest
             }
 
             $body .= self::escapeString($pr['title']) . "\n"
-                . $pr['html_url'] . "\n"
                 . self::escapeString(
                     '@' . implode(' @', array_column($pr['requested_reviewers'], 'login'))
-                ) . "\n\n";
+                ) . "\n\n"
+                . $pr['html_url'] . "\n";
         }
 
         return empty($body)
             ? ''
-            : sprintf(
-                "=== [%s] 本日の未レビューPRはこちら ===\n\n%s============================\n\n",
-                self::$gitRepository,
-                $body
-            );
+            : sprintf("[%s] 現在の未レビューPRはこちら〜\n\n%s", self::$gitRepository, $body);
     }
 
     /**
