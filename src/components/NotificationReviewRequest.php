@@ -71,8 +71,8 @@ class NotificationReviewRequest
             $body .= self::escapeString($pr['title']) . "\n"
                 . self::escapeString(
                     '@' . implode(' @', array_column($pr['requested_reviewers'], 'login'))
-                ) . "\n\n"
-                . $pr['html_url'] . "\n";
+                ) . "\n"
+                . $pr['html_url'] . "\n\n";
         }
 
         return empty($body)
