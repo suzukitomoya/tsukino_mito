@@ -46,11 +46,7 @@ class NotificationReviewRequest
             ->api('pull_request')
             ->all(self::$gitRepoOwner, self::$gitRepository, ['state' => 'open']);
 
-        // 通知メッセージ(未レビューPR)があるときだけ通知します
-        $message = self::getMessage($openPullRequests);
-        if (!empty($message)) {
-            self::response($message);
-        }
+        self::response(self::getMessage($openPullRequests));
         exit;
     }
 
@@ -76,7 +72,7 @@ class NotificationReviewRequest
         }
 
         return empty($body)
-            ? ''
+            ? sprintf('[%s] 未対応のレビュー依頼はないよ！やったね！', self::$gitRepository)
             : sprintf(
                 ":innocent::innocent::innocent: [%s] レビュー依頼が届いてるよ〜 :innocent::innocent::innocent:\n\n\n%s",
                 self::$gitRepository,
