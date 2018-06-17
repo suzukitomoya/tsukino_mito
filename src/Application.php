@@ -53,7 +53,7 @@ class Application
     private static function run(string $className): void
     {
         try {
-            if (!class_exists($className, false)) {
+            if (!class_exists($className)) {
                 throw new Exception('Undefined class: '.$className);
             }
             if (!method_exists($className, 'run')) {
